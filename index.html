@@ -3,32 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💖Date avec ma future femme💖</title>
+  <title>Clique Ella ;)</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     .gradient-background {
-      background: linear-gradient(
-        180deg,
-        rgba(255,208,229,1) 0%,
-        rgba(255,232,242,1) 36%,
-        rgba(255,255,255,1) 100%
-      );
+      background: linear-gradient(180deg, rgba(255,208,229,1) 0%, rgba(255,232,242,1) 36%, rgba(255,255,255,1) 100%);
     }
+    .bounce { animation: bounce 1.6s infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-    .bounce {
-      animation: bounce 1.6s infinite;
-    }
+    button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    button { touch-action: manipulation; }
-
-    .escape {
+    /* NO devient flottant */
+    #noButton.escape {
       position: fixed !important;
       z-index: 9999;
     }
@@ -39,43 +28,37 @@
   <div class="flex items-center justify-center min-h-screen px-4">
     <div class="flex flex-col items-center w-full max-w-md py-10">
 
-      <!-- IMAGE -->
       <img
         id="imageDisplay"
         src="./1.jpeg"
-        class="rounded-2xl h-[320px] w-full object-cover shadow-lg"
+        class="rounded-2xl h-[320px] w-full object-contain bg-white shadow-lg"
         alt="photo"
       />
 
-      <!-- QUESTION -->
       <h2
         id="valentineQuestion"
         class="text-3xl font-bold italic text-[#bd1e59] text-center mt-6"
       >
-        Tu veux aller à un date avec moi ?
+        Tu veux aller en date avec moi ce soir ? 🙃
       </h2>
 
-      <!-- BOUTONS -->
       <div class="flex gap-4 mt-8 w-full" id="responseButtons">
         <button
           id="yesButton"
           class="bounce flex-1 bg-green-500 active:bg-green-400 text-white rounded-2xl px-6 py-4 text-xl shadow-md"
         >
-          Oui mon bb d'amour 💕
+          Oui mon bb d'amour💕
         </button>
 
         <button
           id="noButton"
           class="flex-1 bg-red-500 active:bg-red-600 text-white rounded-2xl px-6 py-4 text-xl shadow-md"
         >
-          Non, tu pues
+          Non, tu pues le caca
         </button>
       </div>
 
-      <p
-        id="afterYes"
-        class="hidden mt-6 text-lg text-[#bd1e59] font-semibold text-center"
-      ></p>
+      <p id="afterYes" class="hidden mt-6 text-lg text-[#bd1e59] font-semibold text-center"></p>
     </div>
   </div>
 
@@ -89,23 +72,13 @@
     const responseButtons = document.getElementById("responseButtons");
     const afterYes = document.getElementById("afterYes");
 
+    const imagePaths = ["./1.jpeg","./2.jpeg","./3.jpeg","./4.jpeg","./5.jpeg"];
+    const texts = ["Non","T'es sûre de toi ?🤨","Ella ?😡","Je vais faire les gros yeux 👀","Je pleure...😭", "J'arrive te tuer!🤬"];
+
     let noClickCount = 0;
 
-    const imagePaths = [
-      "./1.jpeg",
-      "./2.jpeg",
-      "./3.jpeg",
-      "./4.jpeg",
-      "./5.jpeg"
-    ];
-
-    const texts = [
-      "Non",
-      "T'es sûre de toi?🤨",
-      "Ella... ?😡",
-      "Je vais faire les gros yeux 😳",
-      "Attends j'arrive te tuer 🤬"
-    ];
+    // Anti "mauvais clic" : on bloque YES pendant un court instant après un NO
+    let blockYesUntil = 0;
 
     function vibe(ms = 30) {
       if (navigator.vibrate) navigator.vibrate(ms);
@@ -114,27 +87,26 @@
     function moveNoButton() {
       noButton.classList.add("escape");
 
-      const padding = 20;
+      // Calcul basé sur la taille réelle du bouton
       const rect = noButton.getBoundingClientRect();
+      const padding = 16;
 
-      const maxX = window.innerWidth - rect.width - padding;
-      const maxY = window.innerHeight - rect.height - padding;
+      const maxX = Math.max(padding, window.innerWidth - rect.width - padding);
+      const maxY = Math.max(padding, window.innerHeight - rect.height - padding);
 
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
+      const x = padding + Math.random() * (maxX - padding);
+      const y = padding + Math.random() * (maxY - padding);
 
       noButton.style.left = `${x}px`;
       noButton.style.top = `${y}px`;
     }
 
-    // Mobile : le bouton NO fuit avant même le clic 😈
-    noButton.addEventListener("touchstart", () => {
-      vibe(20);
-      moveNoButton();
-    });
+    function handleNoAction(e) {
+      // Empêche que le navigateur "re-route" le touch vers un autre élément (YES)
+      e.preventDefault();
+      e.stopPropagation();
 
-    // Clic NO
-    noButton.addEventListener("click", () => {
+      blockYesUntil = Date.now() + 450; // 450ms de "protection"
       vibe(40);
 
       if (noClickCount < imagePaths.length - 1) {
@@ -147,24 +119,42 @@
       }
 
       yesButton.style.transform = `scale(${1 + noClickCount * 0.25})`;
+
+      // Le bouton fuit après le "NO"
       moveNoButton();
+    }
+
+    // ✅ Un seul event qui marche bien sur mobile + desktop
+    noButton.addEventListener("pointerdown", handleNoAction);
+
+    // Sécurité: si certains navigateurs déclenchent quand même click
+    noButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
     });
 
-    // YES ❤️
-    yesButton.addEventListener("click", () => {
+    yesButton.addEventListener("pointerdown", (e) => {
+      // Si on vient de toucher NO, on ignore le YES accidentel
+      if (Date.now() < blockYesUntil) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      vibe(120);
       imageDisplay.src = "./coeur.jpeg";
       valentineQuestion.textContent = "Yesss 💖 J’ai trop hâte !!!";
       responseButtons.style.display = "none";
-      afterYes.textContent = "Prépare-toi… ça va être incroyable ✨";
+      afterYes.textContent = "Prépare-toi… à toute bby✨";
       afterYes.classList.remove("hidden");
 
-      confetti({
-        particleCount: 180,
-        spread: 90,
-        origin: { y: 0.6 }
-      });
+      confetti({ particleCount: 180, spread: 90, origin: { y: 0.6 } });
+    });
 
-      vibe(120);
+    // Au chargement: place NO un peu plus bas pour éviter les tap accidentels
+    window.addEventListener("load", () => {
+      // Optionnel : tu peux le laisser au milieu au début
+      // moveNoButton();
     });
   </script>
 </body>
