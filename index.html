@@ -1,81 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Date Invitation</title>
+  <title>💖Date avec ma future femme💖</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     .gradient-background {
       background: linear-gradient(
         180deg,
-        rgba(255, 208, 229, 1) 0%,
-        rgba(255, 232, 242, 1) 36%,
-        rgba(255, 255, 255, 1) 100%
+        rgba(255,208,229,1) 0%,
+        rgba(255,232,242,1) 36%,
+        rgba(255,255,255,1) 100%
       );
     }
 
-    .bounce2 {
-      animation: bounce2 2s ease infinite;
+    .bounce {
+      animation: bounce 1.6s infinite;
     }
 
-    @keyframes bounce2 {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-      }
-      40% {
-        transform: translateY(-20px);
-      }
-      60% {
-        transform: translateY(-10px);
-      }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    button { touch-action: manipulation; }
+
+    .escape {
+      position: fixed !important;
+      z-index: 9999;
     }
   </style>
 </head>
 
 <body class="gradient-background">
-  <div class="flex items-center justify-center h-screen">
-    <div class="flex flex-col items-center p-4">
+  <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="flex flex-col items-center w-full max-w-md py-10">
 
       <!-- IMAGE -->
       <img
         id="imageDisplay"
-        src="./IMG_7105.jpeg"
-        class="rounded-md h-[300px] object-cover"
-        alt="cute"
+        src="./1.jpeg"
+        class="rounded-2xl h-[320px] w-full object-cover shadow-lg"
+        alt="photo"
       />
 
       <!-- QUESTION -->
       <h2
         id="valentineQuestion"
-        class="text-4xl font-bold italic text-[#bd1e59] my-4 text-center"
+        class="text-3xl font-bold italic text-[#bd1e59] text-center mt-6"
       >
-        Veux-tu venir en date avec moi gros caca?
+        Tu veux aller à un date avec moi ?
       </h2>
 
-      <!-- BUTTONS -->
-      <div class="flex gap-4 pt-5 items-center" id="responseButtons">
+      <!-- BOUTONS -->
+      <div class="flex gap-4 mt-8 w-full" id="responseButtons">
         <button
           id="yesButton"
-          class="bounce2 bg-green-500 hover:bg-green-400 text-white rounded-md px-4 py-2 text-[20px]"
+          class="bounce flex-1 bg-green-500 active:bg-green-400 text-white rounded-2xl px-6 py-4 text-xl shadow-md"
         >
-          OUI MON BB D'AMOUR DE MA VIE!
+          Oui mon bb d'amour 💕
         </button>
 
         <button
           id="noButton"
-          class="bg-red-500 hover:bg-red-600 text-white rounded-md px-4 py-2 text-[20px]"
+          class="flex-1 bg-red-500 active:bg-red-600 text-white rounded-2xl px-6 py-4 text-xl shadow-md"
         >
-          Non
+          Non, tu pues
         </button>
       </div>
+
+      <p
+        id="afterYes"
+        class="hidden mt-6 text-lg text-[#bd1e59] font-semibold text-center"
+      ></p>
     </div>
   </div>
 
-  <!-- SCRIPT -->
   <script type="module">
     import confetti from "https://cdn.skypack.dev/canvas-confetti";
 
@@ -84,53 +87,85 @@
     const imageDisplay = document.getElementById("imageDisplay");
     const valentineQuestion = document.getElementById("valentineQuestion");
     const responseButtons = document.getElementById("responseButtons");
+    const afterYes = document.getElementById("afterYes");
 
     let noClickCount = 0;
-    let buttonHeight = 48;
-    let buttonWidth = 80;
-    let fontSize = 20;
 
     const imagePaths = [
-      "./IMG_7105.jpeg",
-      "./IMG_7147.jpeg"
+      "./1.jpeg",
+      "./2.jpeg",
+      "./3.jpeg",
+      "./4.jpeg",
+      "./5.jpeg"
     ];
 
     const texts = [
-      "Eh",
-      "T'es sûre de toi ?",
-      "Ella ?",
-      "Encore ?",
-      "Tu veux que je brûle ton panda ?",
-      "C'est bon je vais pleurer..."
+      "Non",
+      "T'es sûre de toi?🤨",
+      "Ella... ?😡",
+      "Je vais faire les gros yeux 😳",
+      "Attends j'arrive te tuer 🤬"
     ];
 
+    function vibe(ms = 30) {
+      if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
+    function moveNoButton() {
+      noButton.classList.add("escape");
+
+      const padding = 20;
+      const rect = noButton.getBoundingClientRect();
+
+      const maxX = window.innerWidth - rect.width - padding;
+      const maxY = window.innerHeight - rect.height - padding;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noButton.style.left = `${x}px`;
+      noButton.style.top = `${y}px`;
+    }
+
+    // Mobile : le bouton NO fuit avant même le clic 😈
+    noButton.addEventListener("touchstart", () => {
+      vibe(20);
+      moveNoButton();
+    });
+
+    // Clic NO
     noButton.addEventListener("click", () => {
-      if (noClickCount < imagePaths.length) {
+      vibe(40);
+
+      if (noClickCount < imagePaths.length - 1) {
+        noClickCount++;
         imageDisplay.src = imagePaths[noClickCount];
       }
-
-      noClickCount++;
-
-      buttonHeight += 35;
-      buttonWidth += 35;
-      fontSize += 25;
-
-      yesButton.style.height = `${buttonHeight}px`;
-      yesButton.style.width = `${buttonWidth}px`;
-      yesButton.style.fontSize = `${fontSize}px`;
 
       if (noClickCount < texts.length) {
         noButton.textContent = texts[noClickCount];
       }
+
+      yesButton.style.transform = `scale(${1 + noClickCount * 0.25})`;
+      moveNoButton();
     });
 
+    // YES ❤️
     yesButton.addEventListener("click", () => {
-      imageDisplay.src = "./IMG_7147.jpeg";
-      valentineQuestion.textContent = "Let's gooo !! On va bien s'amuser ❤️";
+      imageDisplay.src = "./coeur.jpeg";
+      valentineQuestion.textContent = "Yesss 💖 J’ai trop hâte !!!";
       responseButtons.style.display = "none";
-      confetti();
+      afterYes.textContent = "Prépare-toi… ça va être incroyable ✨";
+      afterYes.classList.remove("hidden");
+
+      confetti({
+        particleCount: 180,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
+
+      vibe(120);
     });
   </script>
 </body>
 </html>
-
