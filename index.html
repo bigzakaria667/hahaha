@@ -58,38 +58,50 @@
     let buttonHeight = 48; // Starting height in pixels
     let buttonWidth = 80;
     let fontSize = 20; // Starting font size in pixels
-    const imagePaths = [
-      "./images/image1.gif",
-      "./images/image2.gif",
-      "./images/image3.gif",
-      "./images/image4.gif",
-      "./images/image5.gif",
-      "./images/image6.gif",
-      "./images/image7.gif"
     ];
+    const imagePaths = [
+      "./images/IMG_7105.jpeg",
+      "./images/IMG_7147.jpeg"
+    ];
+
   
-    noButton.addEventListener('click', function() {
-      if (noClickCount < 5) {
-        noClickCount++;
-        imageDisplay.src = imagePaths[noClickCount];
-        buttonHeight += 35; // Increase height by 5px on each click
-        buttonWidth += 35;
-        fontSize += 25; // Increase font size by 1px on each click
-        yesButton.style.height = `${buttonHeight}px`; // Update button height
-        yesButton.style.width = `${buttonWidth}px`;
-        yesButton.style.fontSize = `${fontSize}px`; // Update font size
-        if (noClickCount < 6) {
-          noButton.textContent = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."][noClickCount];
-        }
-      }
-    });
+    noButton.addEventListener('click', function () {
+  if (noClickCount < imagePaths.length) {
+    imageDisplay.src = imagePaths[noClickCount];
+  }
+
+  noClickCount++;
+
+  buttonHeight += 35;
+  buttonWidth += 35;
+  fontSize += 25;
+
+  yesButton.style.height = `${buttonHeight}px`;
+  yesButton.style.width = `${buttonWidth}px`;
+  yesButton.style.fontSize = `${fontSize}px`;
+
+  const texts = [
+    "Eh",
+    "T'es sûre de toi ?",
+    "Ella ?",
+    "Encore ?",
+    "Tu veux que je brûle ton panda ?",
+    "C'est bon je vais pleurer..."
+  ];
+
+  if (noClickCount < texts.length) {
+    noButton.textContent = texts[noClickCount];
+  }
+});
+
   
     yesButton.addEventListener('click', () => {
-      imageDisplay.src = './images/image7.gif'; // Change to image7.gif
-      valentineQuestion.textContent = "Yayyy!! :3"; // Change the question text
+      imageDisplay.src = './images/IMG_7105.jpeg'; // Change to image7.gif
+      valentineQuestion.textContent = "Let's gooo !! On va bien s'amuser <3"; // Change the question text
       responseButtons.style.display = 'none'; // Hide both buttons
       confetti(); // Trigger confetti animation
     });
   </script>  
 </body>
+
 </html>
